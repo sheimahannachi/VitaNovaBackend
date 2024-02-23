@@ -38,7 +38,8 @@ public class User {
     private float height;
     @Column(name = "password")
     private String password;
-
+    @Column(name = "archive")
+    private Boolean archive=false;
 
     @OneToOne
     PersonalGoals personalGoals;
@@ -54,4 +55,6 @@ public class User {
 
     @ManyToMany( mappedBy = "membres",cascade = CascadeType.ALL)
     List<Community> communities = new ArrayList<>();
+
+
 }
