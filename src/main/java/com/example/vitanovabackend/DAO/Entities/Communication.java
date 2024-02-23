@@ -25,6 +25,13 @@ import java.time.LocalDate;
         LocalDate sentDate;
 
 
+        boolean seen;
+
+        @Enumerated(EnumType.STRING)
+        MessageType type;
+
+
+
         @OneToOne
         User sender;
 

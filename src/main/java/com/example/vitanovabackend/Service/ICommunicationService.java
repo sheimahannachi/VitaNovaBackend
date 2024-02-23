@@ -1,6 +1,8 @@
-package com.example.vitanovabackend.DAO.Service;
+package com.example.vitanovabackend.Service;
 
 import com.example.vitanovabackend.DAO.Entities.Communication;
+
+import java.util.List;
 
 public interface ICommunicationService {
 
@@ -11,4 +13,6 @@ public interface ICommunicationService {
      void deleteCommunication(long id);
 
      Communication findCommunication(long id);
+
+     List<Communication> findallCommunications();
 }

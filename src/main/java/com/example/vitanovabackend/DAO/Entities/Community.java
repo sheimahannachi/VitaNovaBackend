@@ -22,7 +22,7 @@ public class Community {
     long id;
 
 
-    String ComunityName;
+    String communityName;
 
 
     String description;
@@ -31,6 +31,8 @@ public class Community {
 
 
     boolean status ;
+
+    String chatChannel;
 
     @ManyToOne
     User creator;

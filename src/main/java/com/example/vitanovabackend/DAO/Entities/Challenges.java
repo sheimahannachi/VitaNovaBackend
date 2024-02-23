@@ -20,6 +20,13 @@ public class Challenges {
     long id;
     String name ;
 
+    //Active for 7 days
+    LocalDate creationDate;
+
+    boolean active;
+
+    String description;
+
     @ManyToOne
     Community community ;
 

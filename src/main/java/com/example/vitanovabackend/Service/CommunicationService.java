@@ -1,4 +1,4 @@
-package com.example.vitanovabackend.DAO.Service;
+package com.example.vitanovabackend.Service;
 
 import com.example.vitanovabackend.DAO.Entities.Communication;
 import com.example.vitanovabackend.DAO.Repositories.CommunicationRepository;
@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Service
 @AllArgsConstructor
@@ -26,7 +27,7 @@ public class CommunicationService implements  ICommunicationService{
         if(communication1==null)
             return null;
         communication.setId(id);
-        communication.setStatus(false);
+        communication.setSeen(false);
 
         return repository.save(communication);
     }
@@ -42,10 +43,15 @@ public class CommunicationService implements  ICommunicationService{
     public Communication findCommunication(long id) {
 
         Communication communication= repository.findById(id).orElse(null);
-        if(communication!=null && !communication.isStatus()) {
-            communication.setStatus(true);
+        if(communication!=null && !communication.isSeen()) {
+            communication.setSeen(true);
         }
 
         return communication;
+    }
+
+    @Override
+    public List<Communication> findallCommunications() {
+        return repository.findAll();
     }
 }
