@@ -1,6 +1,8 @@
 package com.example.vitanovabackend.Controllers;
 
 import com.example.vitanovabackend.DAO.Entities.Communication;
+import com.example.vitanovabackend.Service.ICommunicationService;
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
@@ -11,7 +13,10 @@ import org.springframework.stereotype.Controller;
 
 @Controller
 @Slf4j
+@AllArgsConstructor
 public class ChatController {
+
+    private ICommunicationService service;
 
     @MessageMapping("/chat.sendMessage/{t}")
     @SendTo("/topic/{t}")
@@ -21,6 +26,8 @@ public class ChatController {
 
         log.info(t);
         log.info(chatMessage.getMessage());
+
+        service.addCommunication(chatMessage);
         return chatMessage;
     }
 
