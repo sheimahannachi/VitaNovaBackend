@@ -1,4 +1,4 @@
-package com.example.vitanovabackend.AllServices;
+package com.example.vitanovabackend.Service;
 
 
 import com.example.vitanovabackend.DAO.Entities.PersonalGoals;
