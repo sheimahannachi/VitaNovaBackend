@@ -38,4 +38,9 @@ import java.time.LocalDate;
         @OneToOne
         User reciever;
 
+/*     A revoir
+        @OneToOne
+        Community community
+*/
+
     }

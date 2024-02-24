@@ -1,6 +1,7 @@
 package com.example.vitanovabackend.Service;
 
 import com.example.vitanovabackend.DAO.Entities.Communication;
+import com.example.vitanovabackend.DAO.Entities.User;
 import com.example.vitanovabackend.DAO.Repositories.CommunicationRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -54,5 +55,10 @@ public class CommunicationService implements  ICommunicationService{
     @Override
     public List<Communication> findallCommunications() {
         return repository.findAll();
+    }
+
+    @Override
+    public List<Communication> findBySenderAndReciever(User sender, User reciever) {
+        return repository.findBySenderAndReciever(sender,reciever);
     }
 }

@@ -5,6 +5,8 @@ import com.example.vitanovabackend.Service.CommunityService;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @AllArgsConstructor
 public class CommunityController {
@@ -17,19 +19,29 @@ public class CommunityController {
 
     }
 
-    @PutMapping("updateComunity")
-    public Community updateCommmunity (@RequestParam long id ,@RequestBody Community community){
+    @PutMapping("updateComunity/{id}")
+    public Community updateCommmunity (@PathVariable long id ,@RequestBody Community community){
         return service.updateCommmunity(id,community);
     }
 
-    @DeleteMapping("deleteCommunity")
-    public void deleteCommunity(@RequestParam long id){
+    @DeleteMapping("deleteCommunity/{id}")
+    public void deleteCommunity(@PathVariable long id){
         service.deleteCommunity(id);
     }
 
-    @GetMapping("findCommunity")
-    public Community findCommunity(@RequestParam long id){
+    @GetMapping("findCommunity/{id}")
+    public Community findCommunity(@PathVariable long id){
         return service.findCommunity(id);
+    }
+
+    @GetMapping("/findAllCommunities")
+    public List<Community> findAllCommunities(){
+        return service.findAllCommunity();
+    }
+
+    @GetMapping("/findCommunitiesByNom/{name}")
+    public List<Community> findCommunitiesByName(@PathVariable String name){
+        return service.findByName(name);
     }
 
 
