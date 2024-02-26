@@ -27,6 +27,10 @@ public class Challenges {
 
     String description;
 
+    ChallengeType type;
+
+    long goal;
+
     @ManyToOne
     Community community ;
 

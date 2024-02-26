@@ -37,6 +37,8 @@ public class Community {
     @ManyToOne
     User creator;
 
+
+
     @ManyToMany
     List<User> membres = new ArrayList<>();
     @OneToMany(mappedBy ="community")
