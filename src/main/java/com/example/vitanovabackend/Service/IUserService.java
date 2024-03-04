@@ -12,7 +12,9 @@ public interface IUserService {
     List<User> SearchByNameAndLastName(String name,String LastName);
     User AddUser(User user);
     int ArchiveUser(Long Id);
+    int ActivateUser(Long Id);
 
+    List<User> getAllUsers();
     User updateUser(User user);
 
 }

@@ -1,5 +1,6 @@
 package com.example.vitanovabackend.Controllers;
 
+import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -54,7 +55,6 @@ public class AuthController {
     JwtUtils jwtUtils;
 
     @CrossOrigin(origins = "http://localhost:4200")
-
     @PostMapping("/login")
     public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
         System.out.println("login controller : ");
@@ -97,13 +97,19 @@ public class AuthController {
         User user = new User(signUpRequest.getUsername(),
                 signUpRequest.getEmail(),
                 encoder.encode(signUpRequest.getPassword()));
-
+user.setDateOfBirth(LocalDate.parse(signUpRequest.getDateOfBirth()));
+user.setGender(signUpRequest.getGender());
+user.setLastName(signUpRequest.getLastName());
+user.setFirstName(signUpRequest.getFirstName());
+user.setPicture(signUpRequest.getPicture());
+user.setWeight(signUpRequest.getWeight());
+user.setHeight(signUpRequest.getHeight());
         String strRoles = signUpRequest.getRole();
         System.out.println("strroles " +strRoles);
         if(strRoles.equals(ERole.ADMIN.toString()))user.setRole(ERole.ADMIN);
         else if(strRoles.equals(ERole.USER.toString()))user.setRole(ERole.USER);
         System.out.println(strRoles.equals(ERole.ADMIN.toString()));
-        System.out.println();
+        System.out.println(user.getPicture()+user.getFirstName()+user.getLastName());
         System.out.println("userRole : " + user.getRole());
         System.out.println("roleadmin " + ERole.ADMIN.toString());
         userRepository.save(user);

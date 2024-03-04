@@ -25,7 +25,6 @@ public class UserService implements IUserService {
         return userRepository.save(user);
     }
 
-    // Implement other methods as required
 
 
 
@@ -56,6 +55,24 @@ public class UserService implements IUserService {
     public List<User> SearchByLastName(String LastName){
         return userRepository.findAllByLastName(LastName);
 
+    }
+
+    @Override
+    public List<User> getAllUsers(){
+    return userRepository.findAll();
+
+    }
+
+    @Override
+  public int ActivateUser(Long Id){
+        User user = userRepository.findById(Id).get();
+        if (user != null) {
+            user.setArchive(false);
+            userRepository.save(user);
+            return 1;
+        } else {
+            return 0;
+        }
     }
 
 }
