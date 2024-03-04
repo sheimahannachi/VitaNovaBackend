@@ -2,10 +2,10 @@ package com.example.vitanovabackend.DAO.Entities;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 @Table(name = "User")
 @Entity
@@ -15,18 +15,19 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class User {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long idUser;
+    @Column(name = "username")
+    private String username;
     @Column(name = "firstName")
     private String firstName;
     @Column(name = "lastName")
     private String lastName;
     @Column(name = "dateOfBirth")
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate dateOfBirth;
-    @Column(name = "role")
-    @Enumerated(EnumType.STRING)
-    private Role role;
     @Column(name = "gender")
     @Enumerated(EnumType.STRING)
     private Gender gender;
@@ -40,7 +41,8 @@ public class User {
     private String password;
     @Column(name = "archive")
     private Boolean archive=false;
-
+    @Column(name = "picture")
+    private String picture;
     @OneToOne
     PersonalGoals personalGoals;
 
@@ -57,4 +59,17 @@ public class User {
     List<Community> communities = new ArrayList<>();
 
 
+
+
+    @Column(name = "role")
+   @Enumerated(EnumType.STRING)
+   private ERole role ;
+
+
+
+    public User(String username, String email, String password) {
+        this.username = username;
+        this.email = email;
+        this.password = password;
+    }
 }

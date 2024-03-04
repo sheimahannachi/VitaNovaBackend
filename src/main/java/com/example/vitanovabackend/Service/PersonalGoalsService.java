@@ -6,6 +6,8 @@ import com.example.vitanovabackend.DAO.Repositories.PersonalGoalsRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @AllArgsConstructor
 @Service
 public class PersonalGoalsService implements IPersonalGoalsService{
@@ -37,4 +39,10 @@ public class PersonalGoalsService implements IPersonalGoalsService{
         }
         else return  null;
     }
+
+    @Override
+    public List<PersonalGoals> GetGoals() {
+        return personalGoalsRepository.findAll();
+    }
+
 }

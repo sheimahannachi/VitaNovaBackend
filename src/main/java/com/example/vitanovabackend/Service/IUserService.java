@@ -1,6 +1,7 @@
 package com.example.vitanovabackend.Service;
 
-import com.example.vitanovabackend.DAO.Entities.User;
+import com.example.vitanovabackend.DAO.Entities.*;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.List;
 
