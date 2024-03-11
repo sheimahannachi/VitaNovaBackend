@@ -2,7 +2,13 @@ package com.example.vitanovabackend.Controllers;
 
 import com.example.vitanovabackend.DAO.Entities.*;
 import com.example.vitanovabackend.Service.IUserService;
+import com.example.vitanovabackend.Service.JwtService;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.AllArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
@@ -13,6 +19,7 @@ import java.util.List;
 @RestController
 @AllArgsConstructor
 public class UserController {
+    JwtService jwtService;
     IUserService iUserService;
     @CrossOrigin(origins = "http://localhost:4200")
     @PostMapping("/AddUser")
@@ -44,28 +51,8 @@ public class UserController {
     }
 
 
-    @GetMapping("/all")
-    public String allAccess() {
-        return "Public Content.";
-    }
 
-    @GetMapping("/user")
-    @PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
-    public String userAccess() {
-        return "User Content.";
-    }
 
-    @GetMapping("/mod")
-    @PreAuthorize("hasRole('MODERATOR')")
-    public String moderatorAccess() {
-        return "Moderator Board.";
-    }
-
-    @GetMapping("/admin")
-    @PreAuthorize("hasRole('ADMIN')")
-    public String adminAccess() {
-        return "Admin Board.";
-    }
 
 
 

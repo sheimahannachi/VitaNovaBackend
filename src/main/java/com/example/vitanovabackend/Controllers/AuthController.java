@@ -1,43 +1,41 @@
 package com.example.vitanovabackend.Controllers;
 
-import java.time.LocalDate;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
-
 import com.example.vitanovabackend.DAO.Entities.ERole;
 import com.example.vitanovabackend.DAO.Entities.User;
 import com.example.vitanovabackend.DAO.Repositories.UserRepository;
 import com.example.vitanovabackend.Payload.Request.LoginRequest;
+import com.example.vitanovabackend.Payload.Request.ResetPasswordRequest;
 import com.example.vitanovabackend.Payload.Request.SignupRequest;
 import com.example.vitanovabackend.Payload.Response.MessageResponse;
 import com.example.vitanovabackend.Payload.Response.UserInfoResponse;
-import com.example.vitanovabackend.Security.Jwt.JwtUtils;
 import com.example.vitanovabackend.Security.services.UserDetailsImpl;
+import com.example.vitanovabackend.Service.IUserService;
+import com.example.vitanovabackend.Service.JwtService;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
-
+import lombok.AllArgsConstructor;
+import lombok.extern.java.Log;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.time.LocalDate;
 
 
-@CrossOrigin(origins = "*", maxAge = 3600)
+@CrossOrigin(origins = "http://localhost:4200", maxAge = 3600)
 @RestController
+@AllArgsConstructor
 @RequestMapping("/api")
 public class AuthController {
     @Autowired
@@ -52,35 +50,47 @@ public class AuthController {
     PasswordEncoder encoder;
 
     @Autowired
-    JwtUtils jwtUtils;
+    JwtService jwtService;
 
-    @CrossOrigin(origins = "http://localhost:4200")
+    IUserService services;
+
     @PostMapping("/login")
-    public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
-        System.out.println("login controller : ");
-        Authentication authentication = authenticationManager
-                .authenticate(new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword()));
+    public ResponseEntity<?> loginUser(@RequestBody LoginRequest loginRequest) {
 
-        SecurityContextHolder.getContext().setAuthentication(authentication);
+        User user = services.loginUser(loginRequest.getUsername(), loginRequest.getPassword());
 
-        UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
+        if (user != null) {
+            return ResponseEntity.ok().body(user);
+        } else {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid username or password");
+        }
+    }
+    @CrossOrigin("**")
+    @PostMapping("/generateToken")
+    public ResponseEntity<UserInfoResponse> authenticateAndGetToken(@RequestBody LoginRequest authRequest) {
+        UserInfoResponse response = new UserInfoResponse();
+        System.out.println(authRequest);
+        User user = services.loginUser(authRequest.getUsername(), authRequest.getPassword());
+        System.out.println(user);
+        System.out.println("generating token : ");
+        if (user != null) {
 
-        ResponseCookie jwtCookie = jwtUtils.generateJwtCookie(userDetails);
+            // Authenticate user
 
-        List<String> roles = userDetails.getAuthorities().stream()
-                .map(GrantedAuthority::getAuthority)
-                .collect(Collectors.toList());
-        System.out.println(jwtCookie);
-        HttpHeaders headers = new HttpHeaders();
-        headers.add("Access-Control-Allow-Origin", "http://localhost:4200"); // Replace with the appropriate origin
-        System.out.println(headers);
+            ResponseCookie jwtCookie = jwtService.generateJwtCookie(user);
+            HttpHeaders headers = new HttpHeaders();
+            System.out.println(jwtCookie);
+            return ResponseEntity.ok().headers(headers).header(HttpHeaders.SET_COOKIE, jwtCookie.toString())
+                    .body(new UserInfoResponse(user.getIdUser(),
+                            user.getUsername(),
+                            user.getRole().toString(),
+                            user.getEmail(),
+                            jwtCookie.getValue()
+                    ));
 
-        // Return the ResponseEntity with the HttpHeaders object containing the CORS header
-        return ResponseEntity.ok().headers(headers).header(HttpHeaders.SET_COOKIE, jwtCookie.toString())
-                .body(new UserInfoResponse(userDetails.getId(),
-                        userDetails.getUsername(),
-                        userDetails.getEmail(),
-                        roles));
+
+        }
+return (ResponseEntity<UserInfoResponse>) ResponseEntity.badRequest();
     }
 
     @PostMapping("/signup")
@@ -98,6 +108,7 @@ public class AuthController {
                 signUpRequest.getEmail(),
                 encoder.encode(signUpRequest.getPassword()));
 user.setDateOfBirth(LocalDate.parse(signUpRequest.getDateOfBirth()));
+
 user.setGender(signUpRequest.getGender());
 user.setLastName(signUpRequest.getLastName());
 user.setFirstName(signUpRequest.getFirstName());
@@ -117,10 +128,10 @@ user.setHeight(signUpRequest.getHeight());
         return ResponseEntity.ok(new MessageResponse("User registered successfully!"));
     }
 
-    @PostMapping("/signout")
+    @GetMapping("/signout")
     public ResponseEntity<?> logoutUser(HttpServletRequest request, HttpServletResponse response) {
-        ResponseCookie cookie = jwtUtils.getCleanJwtCookie();
-
+        ResponseCookie cookie = jwtService.getCleanJwtCookie();
+        System.out.println("signing out : ");
         // Set the expiration date of the cookie to a past time to delete it
         cookie = ResponseCookie.from(cookie.getName(), cookie.getValue())
                 .path(cookie.getPath())
@@ -133,4 +144,35 @@ user.setHeight(signUpRequest.getHeight());
 
         return ResponseEntity.ok().body(new MessageResponse("You've been signed out!"));
     }
+
+
+
+    @GetMapping("/getuserfromtoken")
+    public ResponseEntity<?>GetUserFromToken(HttpServletRequest request){
+        Cookie[] cookies = request.getCookies();
+        if (cookies != null) {
+            for (Cookie cookie : cookies) {
+                if (cookie.getName().equals("jwtToken")) {
+                    String jwtToken = cookie.getValue();
+                    System.out.println(jwtToken);
+                    String username = jwtService.extractUsername(jwtToken); // Assuming you have a method to extract username from JWT token
+                 //   System.out.println("username : "+username +" from token "+ jwtToken );
+                    User user = services.loadUserByUsername(username); // Retrieve user from database based on username
+                 //   System.out.println(user.getEmail());
+
+                    return ResponseEntity.ok(user);
+
+                }
+
+            }
+        }
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null); // JWT token not found in cookie
+    }
+    @CrossOrigin(origins = "http://localhost:4200")
+    @PutMapping("/reset-password")
+    public User resetPassword(@RequestBody ResetPasswordRequest request) {
+        return services.ResetPassword(request.getEmail(), request.getPassword());
+
+    }
+
 }

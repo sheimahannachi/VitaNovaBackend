@@ -1,6 +1,8 @@
 package com.example.vitanovabackend.Payload.Request;
 
+import lombok.Data;
 
+@Data
 public class LoginRequest {
     private String username;
 

@@ -1,6 +1,7 @@
 package com.example.vitanovabackend.Payload.Request;
 
 import com.example.vitanovabackend.DAO.Entities.Gender;
+import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -9,7 +10,7 @@ import java.time.LocalDate;
 import java.util.Set;
 @Getter
 @Setter
-
+@Data
 public class SignupRequest {
 
     private String username;

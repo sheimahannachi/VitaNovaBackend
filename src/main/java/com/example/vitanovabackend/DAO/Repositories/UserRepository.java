@@ -13,8 +13,8 @@ public interface UserRepository extends JpaRepository<User,Long> {
      List<User> findAllByFirstNameAndLastName(String firstName, String lastName);
      List<User> findAllByLastName(String lastName);
 
-    List<User> findByEmail(String email);
-    Optional<User> findByUsername(String username);
+    User findByEmail(String email);
+    User findByUsername(String username);
 
     Boolean existsByUsername(String username);
 
